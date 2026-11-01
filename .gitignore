@@ -1,0 +1,25 @@
+# macOS System Files
+.DS_Store
+*/.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Editor & Temporary Files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Large media / raw slide decks exceeding GitHub limits (>50MB / >100MB)
+Source_Files/11 1 Intestinal microbiology Virology part- in class.pdf
+Source_Files/4. Upper GI Histology Lab.pdf
+Source_Files/Untitled Notebook(1).pdf
+

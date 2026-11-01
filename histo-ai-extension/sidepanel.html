@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HistoLens AI Exam Companion</title>
+  <style>
+    :root {
+      color-scheme: dark;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: #0f172a;
+      color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 13px;
+      padding: 12px;
+      line-height: 1.45;
+    }
+    .card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 11px;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+    }
+    .btn-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+    }
+    button {
+      background: #334155;
+      color: #f1f5f9;
+      border: 1px solid #475569;
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    button:hover {
+      background: #475569;
+    }
+    button.primary {
+      background: linear-gradient(135deg, #2563eb, #0284c7);
+      border-color: #38bdf8;
+      color: #ffffff;
+    }
+    .tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(56, 189, 248, 0.18);
+      color: #38bdf8;
+      margin-bottom: 4px;
+    }
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+    .struct-item {
+      padding: 8px;
+      border-radius: 8px;
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      margin-bottom: 6px;
+    }
+    .struct-item strong {
+      color: #38bdf8;
+      display: block;
+      font-size: 12px;
+    }
+    .struct-item span {
+      font-size: 11px;
+      color: #cbd5e1;
+    }
+    .layer-box {
+      background: #0f172a;
+      border-left: 3px solid #38bdf8;
+      padding: 7px 9px;
+      border-radius: 6px;
+      margin-bottom: 6px;
+      font-size: 11.5px;
+    }
+    .layer-box strong {
+      color: #f8fafc;
+      display: block;
+    }
+    .layer-box ul {
+      padding-left: 14px;
+      margin-top: 3px;
+      color: #cbd5e1;
+      font-size: 11px;
+    }
+    input, select {
+      width: 100%;
+      background: #0f172a;
+      border: 1px solid #475569;
+      color: #f8fafc;
+      padding: 7px 9px;
+      border-radius: 7px;
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="brand">
+      <span class="dot"></span>
+      <span>HistoLens Exam Companion</span>
+    </div>
+    <span id="sp-score-badge" class="tag">Quiz: 0 pts</span>
+  </div>
+
+  <!-- Quick Mode Controls -->
+  <div class="card">
+    <div class="section-title">Active Tab Controls</div>
+    <div class="btn-grid">
+      <button id="sp-btn-lens" class="primary">🔬 Cursor Lens</button>
+      <button id="sp-btn-quiz">🎯 Exam Quiz</button>
+      <button id="sp-btn-map">🗺️ All Layers</button>
+      <button id="sp-btn-scan">❄️ Freeze & Crop</button>
+    </div>
+  </div>
+
+  <!-- Exact Esophagus 4-Layer Exam Rubric -->
+  <div class="card">
+    <div class="section-title">Esophagus Exam Checklist (MHS 234 / MH 109)</div>
+    <div class="layer-box" style="border-color:#38bdf8;">
+      <strong>1. Mucosa (Mucous Membrane)</strong>
+      <ul>
+        <li><strong>Stratified Squamous Non-Keratinized Epithelium</strong></li>
+        <li><strong>Lamina Propria:</strong> thin layer of loose connective tissue</li>
+        <li><strong>Muscularis Mucosae:</strong> smooth muscle</li>
+      </ul>
+    </div>
+    <div class="layer-box" style="border-color:#f59e0b;">
+      <strong>2. Submucosa (Dense Irregular CT)</strong>
+      <ul>
+        <li><strong>Mucus Glands:</strong> simple columnar epithelium (pale foamy acini)</li>
+        <li><strong>Ducts:</strong> simple cuboidal, simple columnar &amp; stratified cuboidal epithelia</li>
+      </ul>
+    </div>
+    <div class="layer-box" style="border-color:#ec4899;">
+      <strong>3. Muscularis Externa (Mostly Smooth Muscle = Final 1/3)</strong>
+      <ul>
+        <li><strong>Inner Layer:</strong> circular layer of muscle cells</li>
+        <li><strong>Outer Layer:</strong> longitudinal layer of muscle cells</li>
+      </ul>
+    </div>
+    <div class="layer-box" style="border-color:#10b981;">
+      <strong>4. Adventitia</strong>
+      <ul>
+        <li>Loose connective tissue outer coat</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Deep Point Inspection Result -->
+  <div class="card">
+    <div class="section-title">Latest Point Inspection (Shift + Click)</div>
+    <span id="sp-layer" class="tag">1. Mucosa</span>
+    <h3 id="sp-title" style="font-size:13.5px;margin-bottom:4px;">Stratified Squamous Non-Keratinized Epithelium</h3>
+    <p id="sp-desc" style="font-size:11.5px;color:#cbd5e1;margin-bottom:6px;">
+      Move your cursor over any layer to see where it <strong>▲ STARTS</strong> and <strong>▼ STOPS</strong>.
+    </p>
+    <div id="sp-tip" style="background:#0f172a;padding:8px;border-radius:8px;font-size:11px;color:#93c5fd;">
+      🎯 <strong>Exam Rule:</strong> Only Esophagus and Duodenum have glands inside the Submucosa!
+    </div>
+  </div>
+
+  <!-- Mapped Regions on Current Slide -->
+  <div class="card">
+    <div class="section-title">Mapped Exam Structures on Slide</div>
+    <div id="sp-regions-list"></div>
+  </div>
+
+  <!-- Gemini API Configuration -->
+  <div class="card">
+    <div class="section-title">Optional AI Engine Settings</div>
+    <input type="password" id="sp-api-key" placeholder="Gemini API Key (Optional)">
+    <select id="sp-model">
+      <option value="gemini-3.8-flash">gemini-3.8-flash</option>
+      <option value="gemini-4-argon">gemini-4-argon</option>
+    </select>
+    <button id="sp-save-settings" class="primary" style="width:100%;">Save Settings</button>
+    <div id="sp-save-status" style="font-size:11px;color:#34d399;margin-top:5px;display:none;">✓ Saved!</div>
+  </div>
+
+  <script src="sidepanel.js"></script>
+</body>
+</html>
