@@ -12020,7 +12020,25 @@ ${text}
           seed.checkedSessions.forEach(id => checkedSessionIds.add(Number(id)));
           localStorage.setItem('gi_checked_sessions_2026', JSON.stringify(Array.from(checkedSessionIds)));
         }
-        // 2. Recall ratings & schedule: merge missing keys only
+        // 2. Recall ratings & schedule: merge missing or newer timestamps
+        if (seed.recallSchedule && typeof seed.recallSchedule === 'object') {
+          let changed = false;
+          Object.keys(seed.recallSchedule).forEach(k => {
+            const sItem = seed.recallSchedule[k];
+            const existing = recallSchedule[k];
+            if (!existing || (sItem && sItem.updatedAt && (!existing.updatedAt || sItem.updatedAt >= existing.updatedAt))) {
+              recallSchedule[k] = sItem;
+              if (seed.recallRatings && seed.recallRatings[k]) {
+                recallRatings[k] = seed.recallRatings[k];
+              }
+              changed = true;
+            }
+          });
+          if (changed) {
+            localStorage.setItem('gi_recall_ratings_2026', JSON.stringify(recallRatings));
+            localStorage.setItem('gi_recall_schedule_2026', JSON.stringify(recallSchedule));
+          }
+        }
         if (seed.recallRatings && typeof seed.recallRatings === 'object') {
           let changed = false;
           Object.keys(seed.recallRatings).forEach(k => {
@@ -12030,16 +12048,6 @@ ${text}
             }
           });
           if (changed) localStorage.setItem('gi_recall_ratings_2026', JSON.stringify(recallRatings));
-        }
-        if (seed.recallSchedule && typeof seed.recallSchedule === 'object') {
-          let changed = false;
-          Object.keys(seed.recallSchedule).forEach(k => {
-            if (!recallSchedule[k] && seed.recallSchedule[k]) {
-              recallSchedule[k] = seed.recallSchedule[k];
-              changed = true;
-            }
-          });
-          if (changed) localStorage.setItem('gi_recall_schedule_2026', JSON.stringify(recallSchedule));
         }
         ensureRecallScheduleSynced();
         // 3. MCQ answers, flags, strikethroughs: merge missing keys only
@@ -12078,11 +12086,11 @@ ${text}
           });
           if (changed) localStorage.setItem('gi_custom_photo_slots_2026', JSON.stringify(customSessionSlots));
         }
-        // 5. Session notes & transcripts: only populate if not already in localStorage
+        // 5. Session notes & transcripts: update if missing or if seed has richer content
         if (seed.sessionNotes && typeof seed.sessionNotes === 'object') {
           Object.keys(seed.sessionNotes).forEach(k => {
             const existing = localStorage.getItem(k);
-            if ((existing === null || existing === '') && seed.sessionNotes[k]) {
+            if ((existing === null || existing === '' || existing.length < 50) && seed.sessionNotes[k]) {
               localStorage.setItem(k, seed.sessionNotes[k]);
             }
           });
@@ -12090,7 +12098,7 @@ ${text}
         if (seed.sessionTranscripts && typeof seed.sessionTranscripts === 'object') {
           Object.keys(seed.sessionTranscripts).forEach(k => {
             const existing = localStorage.getItem(k);
-            if ((existing === null || existing === '') && seed.sessionTranscripts[k]) {
+            if ((existing === null || existing === '' || existing.length < 50) && seed.sessionTranscripts[k]) {
               localStorage.setItem(k, seed.sessionTranscripts[k]);
             }
           });
