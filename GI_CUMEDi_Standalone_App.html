@@ -6538,38 +6538,37 @@ window.__GI_DISK_SYNC_STATE = {"updatedAt": 1793549307848, "checkedSessions": [0
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 min-h-screen transition-colors duration-200">
 
   <!-- TOP BAR -->
-  <header class="sticky top-0 z-50 backdrop-blur-md bg-white/85 dark:bg-slate-900/85 border-b border-slate-200 dark:border-slate-800 shadow-xs">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16 gap-3">
+  <header class="sticky top-0 z-50 backdrop-blur-md bg-white/90 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 shadow-xs">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-14 sm:h-16 gap-1.5 sm:gap-3">
         <!-- BRANDING (LEFT) -->
-        <div class="flex items-center space-x-3 min-w-0 pr-2">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-teal-500 to-cyan-400 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-blue-500/20 shrink-0">
+        <div onclick="switchTab('scheduleTab')" class="flex items-center space-x-2 sm:space-x-3 min-w-0 pr-1 cursor-pointer shrink-0">
+          <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-teal-500 to-cyan-400 flex items-center justify-center text-white font-bold text-sm sm:text-lg shadow-md shadow-blue-500/20 shrink-0">
             GI
           </div>
-          <div class="min-w-0">
-            <h1 class="text-sm sm:text-base lg:text-lg font-bold text-slate-900 dark:text-white leading-tight whitespace-nowrap">
-              Gastrointestinal System <span class="hidden sm:inline">Course 2026</span>
+          <div class="min-w-0 hidden xs:block">
+            <h1 class="text-xs sm:text-base lg:text-lg font-bold text-slate-900 dark:text-white leading-tight truncate">
+              Gastrointestinal <span class="hidden sm:inline">System Course 2026</span>
             </h1>
-            <div class="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 leading-tight mt-0.5">
-              <span class="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 font-mono shrink-0">3030346</span>
-              <span class="hidden md:inline truncate">CU-MEDi &bull; Faculty of Medicine, Chulalongkorn University</span>
-              <span class="md:hidden truncate">CU-MEDi</span>
+            <div class="flex items-center gap-1.5 text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 leading-tight mt-0.5">
+              <span class="font-bold uppercase tracking-wider px-1 py-0.2 rounded-md bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 font-mono shrink-0">3030346</span>
+              <span class="hidden md:inline truncate">CU-MEDi &bull; Faculty of Medicine</span>
             </div>
           </div>
         </div>
 
         <!-- NAVIGATION CONTROLS (RIGHT) -->
-        <div class="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
-          <button id="syncStatusBadge" onclick="syncNowWithServer(true)" class="inline-flex items-center px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg text-[11px] font-mono font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 transition cursor-pointer" title="Real-Time 2-Way Sync across Mac, iPhone & iPad — Click to sync now">
+        <div class="flex items-center space-x-1 sm:space-x-2 shrink-0">
+          <button id="syncStatusBadge" onclick="syncNowWithServer(true)" class="inline-flex items-center px-2 py-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-[10px] sm:text-[11px] font-mono font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 transition cursor-pointer select-none touch-manipulation active:scale-95" title="Real-Time 2-Way Sync across Mac, iPhone & iPad — Click to sync now">
             <span>🔄 Synced</span>
           </button>
-          <button onclick="switchTab('studioTab'); switchStudioSubTab('flashcards')" class="inline-flex items-center px-2.5 py-1.5 sm:px-3 rounded-lg text-xs font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 transition shadow-md shadow-amber-500/20 cursor-pointer" title="Practice Active Recall Flashcards">
-            <span class="mr-1">⚡</span> <span>Recall <span class="hidden md:inline">Deck</span></span> <span id="headerRecallCountBadge" class="ml-1.5 px-1.5 py-0.5 rounded-full bg-white/25 text-[10px] font-mono">254</span>
+          <button onclick="switchTab('studioTab'); switchStudioSubTab('flashcards')" class="inline-flex items-center px-2 py-1.5 sm:px-3 rounded-lg text-xs font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 transition shadow-md shadow-amber-500/20 cursor-pointer select-none touch-manipulation active:scale-95" title="Practice Active Recall Flashcards">
+            <span class="mr-1">⚡</span> <span>Recall <span class="hidden sm:inline">Deck</span></span> <span id="headerRecallCountBadge" class="ml-1 px-1.5 py-0.5 rounded-full bg-white/25 text-[10px] font-mono">254</span>
           </button>
-          <button onclick="switchTab('studioTab'); switchStudioSubTab('mcqs')" class="inline-flex items-center px-2.5 py-1.5 sm:px-3 rounded-lg text-xs font-bold bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700 transition shadow-md shadow-emerald-500/20 cursor-pointer" title="Practice 5-Option Board/IMS-III Style Clinical Vignette MCQs">
-            <span class="mr-1">📝</span> <span>Exam <span class="hidden md:inline">MCQs</span></span> <span id="headerMcqCountBadge" class="ml-1.5 px-1.5 py-0.5 rounded-full bg-white/25 text-[10px] font-mono">108</span>
+          <button onclick="switchTab('studioTab'); switchStudioSubTab('mcqs')" class="inline-flex items-center px-2 py-1.5 sm:px-3 rounded-lg text-xs font-bold bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700 transition shadow-md shadow-emerald-500/20 cursor-pointer select-none touch-manipulation active:scale-95" title="Practice 5-Option Board/IMS-III Style Clinical Vignette MCQs">
+            <span class="mr-1">📝</span> <span>Exam <span class="hidden sm:inline">MCQs</span></span> <span id="headerMcqCountBadge" class="ml-1 px-1.5 py-0.5 rounded-full bg-white/25 text-[10px] font-mono">108</span>
           </button>
-          <button onclick="switchTab('studioTab')" class="inline-flex items-center px-2.5 py-1.5 sm:px-3 rounded-lg text-xs font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 text-white hover:from-blue-700 hover:to-cyan-600 transition shadow-md shadow-blue-500/20 cursor-pointer">
+          <button onclick="switchTab('studioTab')" class="hidden sm:inline-flex items-center px-2.5 py-1.5 sm:px-3 rounded-lg text-xs font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 text-white hover:from-blue-700 hover:to-cyan-600 transition shadow-md shadow-blue-500/20 cursor-pointer select-none touch-manipulation active:scale-95">
             <span class="mr-1">📖</span> <span>Studio<span class="hidden lg:inline"> &amp; Blueprint</span></span>
           </button>
           <a href="https://docs.google.com/document/d/1UGQQqHTj2pwHSphdqhUmpPIbBk8Z-wpo/edit" target="_blank" class="hidden xl:inline-flex items-center px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900 transition shadow-xs" title="Open Official GI Student Guide 2026 (Google Docs)">
@@ -6584,10 +6583,10 @@ window.__GI_DISK_SYNC_STATE = {"updatedAt": 1793549307848, "checkedSessions": [0
             <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
             Leave Form
           </a>
-          <button onclick="window.print()" class="no-print p-2 rounded-lg text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="Print Current View">
+          <button onclick="window.print()" class="no-print hidden sm:inline-flex p-2 rounded-lg text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="Print Current View">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4H7v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
           </button>
-          <button onclick="toggleDarkMode()" class="no-print p-2 rounded-lg text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="Toggle Light/Dark Theme">
+          <button onclick="toggleDarkMode()" class="no-print p-2 rounded-lg text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition select-none touch-manipulation active:scale-90" title="Toggle Light/Dark Theme">
             <svg id="sunIcon" class="w-5 h-5 hidden dark:block text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"/></svg>
             <svg id="moonIcon" class="w-5 h-5 block dark:hidden text-slate-600" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/></svg>
           </button>
@@ -8063,7 +8062,7 @@ window.__GI_DISK_SYNC_STATE = {"updatedAt": 1793549307848, "checkedSessions": [0
       if (!toast) {
         toast = document.createElement('div');
         toast.id = 'giPhotoToast';
-        toast.className = 'fixed bottom-5 right-5 z-[90] max-w-sm px-4 py-3 rounded-xl bg-slate-900/95 dark:bg-slate-800 text-white text-xs font-bold shadow-2xl border border-slate-700 transition-all duration-300';
+        toast.className = 'fixed top-16 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-sm px-4 py-3 rounded-xl bg-slate-900/95 dark:bg-slate-800 text-white text-xs font-bold shadow-2xl border border-slate-700 transition-all duration-300 text-center pointer-events-none';
         document.body.appendChild(toast);
       }
       toast.innerHTML = msg;
@@ -8071,7 +8070,7 @@ window.__GI_DISK_SYNC_STATE = {"updatedAt": 1793549307848, "checkedSessions": [0
       clearTimeout(window.__giPhotoToastTimer);
       window.__giPhotoToastTimer = setTimeout(() => {
         if (toast) toast.classList.add('hidden');
-      }, 4200);
+      }, 3500);
     }
 
     // Export / Import all photos & annotations as JSON backup
@@ -13133,29 +13132,29 @@ ${text}
     </div>
   </div>
   <!-- MOBILE BOTTOM NAVIGATION DOCK (Optimized for iPhone & iPad touch) -->
-  <nav class="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 px-2 py-1.5 flex items-center justify-around text-xs shadow-lg" style="padding-bottom: max(0.6rem, env(safe-area-inset-bottom));">
-    <button onclick="switchTab('scheduleTab')" class="flex flex-col items-center gap-0.5 font-bold text-slate-600 dark:text-slate-300 hover:text-blue-600 p-1">
-      <span class="text-lg">📅</span>
+  <nav class="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 px-1 py-1 flex items-center justify-around text-xs shadow-lg" style="padding-bottom: max(0.6rem, env(safe-area-inset-bottom));">
+    <button onclick="switchTab('scheduleTab')" class="flex flex-col items-center gap-0.5 font-bold text-slate-600 dark:text-slate-300 hover:text-blue-600 p-1.5 touch-manipulation active:scale-90">
+      <span class="text-xl">📅</span>
       <span class="text-[10px]">Schedule</span>
     </button>
-    <button onclick="switchTab('studioTab'); switchStudioSubTab('flashcards')" class="flex flex-col items-center gap-0.5 font-bold text-amber-600 dark:text-amber-400 p-1">
-      <span class="text-lg">⚡</span>
-      <span class="text-[10px]">Anki</span>
+    <button onclick="switchTab('studioTab'); switchStudioSubTab('flashcards')" class="flex flex-col items-center gap-0.5 font-bold text-amber-600 dark:text-amber-400 p-1.5 touch-manipulation active:scale-90">
+      <span class="text-xl">⚡</span>
+      <span class="text-[10px]">Anki (254)</span>
     </button>
-    <button onclick="switchTab('studioTab'); switchStudioSubTab('mcqs')" class="flex flex-col items-center gap-0.5 font-bold text-rose-600 dark:text-rose-400 p-1">
-      <span class="text-lg">📝</span>
-      <span class="text-[10px]">MCQs</span>
+    <button onclick="switchTab('studioTab'); switchStudioSubTab('mcqs')" class="flex flex-col items-center gap-0.5 font-bold text-emerald-600 dark:text-emerald-400 p-1.5 touch-manipulation active:scale-90">
+      <span class="text-xl">📝</span>
+      <span class="text-[10px]">MCQ (108)</span>
     </button>
-    <button onclick="switchTab('studioTab'); switchStudioSubTab('browser')" class="flex flex-col items-center gap-0.5 font-bold text-slate-600 dark:text-slate-300 hover:text-blue-600 p-1">
-      <span class="text-lg">📖</span>
-      <span class="text-[10px]">Studio</span>
+    <button onclick="switchTab('studioTab'); switchStudioSubTab('blueprint')" class="flex flex-col items-center gap-0.5 font-bold text-blue-600 dark:text-blue-400 p-1.5 touch-manipulation active:scale-90">
+      <span class="text-xl">🎯</span>
+      <span class="text-[10px]">Blueprint</span>
     </button>
-    <button onclick="switchTab('groupsTab')" class="flex flex-col items-center gap-0.5 font-bold text-slate-600 dark:text-slate-300 hover:text-blue-600 p-1">
-      <span class="text-lg">👥</span>
-      <span class="text-[10px]">Groups</span>
+    <button onclick="syncNowWithServer(true)" class="flex flex-col items-center gap-0.5 font-bold text-emerald-600 dark:text-emerald-300 p-1.5 touch-manipulation active:scale-90">
+      <span class="text-xl">🔄</span>
+      <span class="text-[10px]">Sync</span>
     </button>
-    <button onclick="toggleDarkMode()" class="flex flex-col items-center gap-0.5 font-bold text-slate-600 dark:text-slate-300 hover:text-blue-600 p-1">
-      <span class="text-lg">🌓</span>
+    <button onclick="toggleDarkMode()" class="flex flex-col items-center gap-0.5 font-bold text-slate-600 dark:text-slate-300 hover:text-blue-600 p-1.5 touch-manipulation active:scale-90">
+      <span class="text-xl">🌓</span>
       <span class="text-[10px]">Theme</span>
     </button>
   </nav>
