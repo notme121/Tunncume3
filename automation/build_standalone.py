@@ -4,6 +4,7 @@ that embeds data/gi_daily_learning_data.js and data/user_sync_state.js inline so
 with 1 drag-and-drop or shared via AirDrop/iCloud without needing external JS files.
 """
 import os
+import re
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INDEX_PATH = os.path.join(ROOT, "index.html")
@@ -18,20 +19,24 @@ def build():
     with open(DATA_PATH, "r", encoding="utf-8") as f:
         data_js = f.read()
 
-    target_tag = '<script src="data/gi_daily_learning_data.js"></script>'
     inline_script = f"<script>\n{data_js}\n</script>"
-    if target_tag in html:
-        bundled = html.replace(target_tag, inline_script, 1)
-    else:
-        bundled = html
+    bundled = re.sub(
+        r'<script src="data/gi_daily_learning_data\.js[^"]*"></script>',
+        lambda _: inline_script,
+        html,
+        count=1,
+    )
 
     if os.path.exists(SYNC_PATH):
         with open(SYNC_PATH, "r", encoding="utf-8") as f:
             sync_js = f.read()
-        sync_target = '<script src="data/user_sync_state.js"></script>'
         sync_inline = f"<script>\n{sync_js}\n</script>"
-        if sync_target in bundled:
-            bundled = bundled.replace(sync_target, sync_inline, 1)
+        bundled = re.sub(
+            r'<script src="data/user_sync_state\.js[^"]*"></script>',
+            lambda _: sync_inline,
+            bundled,
+            count=1,
+        )
 
     with open(OUT_PATH, "w", encoding="utf-8") as f:
         f.write(bundled)
