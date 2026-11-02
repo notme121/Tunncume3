@@ -69,10 +69,10 @@
             <span>🔄 Synced</span>
           </button>
           <button onclick="switchTab('studioTab'); switchStudioSubTab('flashcards')" class="inline-flex items-center px-2.5 py-1.5 sm:px-3 rounded-lg text-xs font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 transition shadow-md shadow-amber-500/20 cursor-pointer" title="Practice Active Recall Flashcards">
-            <span class="mr-1">⚡</span> <span>Recall <span class="hidden md:inline">Deck</span></span> <span id="headerRecallCountBadge" class="ml-1.5 px-1.5 py-0.5 rounded-full bg-white/25 text-[10px] font-mono">223</span>
+            <span class="mr-1">⚡</span> <span>Recall <span class="hidden md:inline">Deck</span></span> <span id="headerRecallCountBadge" class="ml-1.5 px-1.5 py-0.5 rounded-full bg-white/25 text-[10px] font-mono">254</span>
           </button>
           <button onclick="switchTab('studioTab'); switchStudioSubTab('mcqs')" class="inline-flex items-center px-2.5 py-1.5 sm:px-3 rounded-lg text-xs font-bold bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700 transition shadow-md shadow-emerald-500/20 cursor-pointer" title="Practice 5-Option Board/IMS-III Style Clinical Vignette MCQs">
-            <span class="mr-1">📝</span> <span>Exam <span class="hidden md:inline">MCQs</span></span> <span id="headerMcqCountBadge" class="ml-1.5 px-1.5 py-0.5 rounded-full bg-white/25 text-[10px] font-mono">106</span>
+            <span class="mr-1">📝</span> <span>Exam <span class="hidden md:inline">MCQs</span></span> <span id="headerMcqCountBadge" class="ml-1.5 px-1.5 py-0.5 rounded-full bg-white/25 text-[10px] font-mono">108</span>
           </button>
           <button onclick="switchTab('studioTab')" class="inline-flex items-center px-2.5 py-1.5 sm:px-3 rounded-lg text-xs font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 text-white hover:from-blue-700 hover:to-cyan-600 transition shadow-md shadow-blue-500/20 cursor-pointer">
             <span class="mr-1">📖</span> <span>Studio<span class="hidden lg:inline"> &amp; Blueprint</span></span>
@@ -702,7 +702,7 @@
             </button>
             <button onclick="switchStudioSubTab('mcqs')" id="studioSubBtn-mcqs" class="px-3 py-1.5 rounded-lg font-bold transition text-emerald-300 hover:text-white cursor-pointer flex items-center gap-1">
               <span>📝 Exam MCQ QBank</span>
-              <span id="studioMcqSubTabBadge" class="px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[10px] font-mono">106</span>
+              <span id="studioMcqSubTabBadge" class="px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[10px] font-mono">108</span>
             </button>
             <button onclick="switchStudioSubTab('browser')" id="studioSubBtn-browser" class="px-3 py-1.5 rounded-lg font-bold transition text-slate-300 hover:text-white cursor-pointer">
               📚 Session Browser (57)
@@ -2469,6 +2469,8 @@
             evalTrack: s.evalTrack || '-',
             q: r.q,
             a: r.a,
+            frontImg: r.frontImg || '',
+            backImg: r.backImg || r.img || '',
             rating: rating,
             dueAt: sched.dueAt || 0,
             intervalMs: sched.intervalMs || 0,
@@ -3150,7 +3152,7 @@
             '</div>' +
             '<div class="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-relaxed">' + formatCardText(card.q) + '</div>';
 
-        // Front Photo Render
+        // Front Photo Render (User Custom Photo OR Built-in Cake GI Diagram)
         if (frontPhoto) {
           html += '<div class="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950/60 p-2.5 space-y-2" onclick="event.stopPropagation()">' +
             '<div class="flex items-center justify-between text-[11px] font-mono text-slate-500">' +
@@ -3164,6 +3166,16 @@
               '<img src="' + (frontPhoto.renderedDataUrl || frontPhoto.baseDataUrl) + '" alt="Question Photo" onclick="openPhotoAnnotationModal(\'' + frontPhotoKey + '\', \'Question Photo\')" class="max-h-64 w-auto object-contain rounded cursor-zoom-in">' +
             '</div>' +
           '</div>';
+        } else if (card.frontImg) {
+          html += '<div class="rounded-xl border border-amber-200 dark:border-amber-800/70 bg-amber-50/40 dark:bg-slate-950/60 p-2.5 space-y-2" onclick="event.stopPropagation()">' +
+            '<div class="flex items-center justify-between text-[11px] font-mono text-amber-700 dark:text-amber-300">' +
+              '<span>📸 Exam Visual Prompt (Tap to zoom full-screen)</span>' +
+              '<button onclick="openCakeImageZoom(\'' + card.frontImg + '\', \'Question Visual Prompt\')" class="px-2 py-0.5 rounded bg-amber-600 hover:bg-amber-500 text-white font-bold cursor-pointer">🔍 Zoom</button>' +
+            '</div>' +
+            '<div class="flex justify-center bg-white dark:bg-slate-950 rounded-lg overflow-hidden p-1">' +
+              '<img src="' + card.frontImg + '" alt="Question Visual" onclick="openCakeImageZoom(\'' + card.frontImg + '\', \'Question Visual Prompt\')" class="max-h-64 w-auto object-contain rounded cursor-zoom-in">' +
+            '</div>' +
+          '</div>';
         }
 
         html += '</div>';
@@ -3171,7 +3183,7 @@
         // Flip Target or Back of Card
         if (!flashcardRevealed) {
           html += '<div class="w-full py-7 rounded-xl border-2 border-dashed border-amber-300 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/20 hover:bg-amber-100/60 dark:hover:bg-amber-950/40 text-amber-800 dark:text-amber-300 font-extrabold text-sm transition flex flex-col items-center justify-center gap-1">' +
-            '<span>👆 Tap Card to Reveal Answer' + (backPhoto ? ' &amp; Diagram 🖼️' : '') + '</span>' +
+            '<span>👆 Tap Card to Reveal Answer' + ((backPhoto || card.backImg) ? ' &amp; Senior Diagram 🖼️' : '') + '</span>' +
             '<span class="text-[11px] font-mono font-normal opacity-75">or press [Space] &bull; Copy any image &amp; press Cmd+V to attach to card</span>' +
           '</div>';
         } else {
@@ -3200,6 +3212,16 @@
               '</div>' +
               '<div class="flex justify-center bg-slate-900/5 dark:bg-slate-950 rounded-lg overflow-hidden">' +
                 '<img src="' + (backPhoto.renderedDataUrl || backPhoto.baseDataUrl) + '" alt="Answer Diagram" onclick="openPhotoAnnotationModal(\'' + backPhotoKey + '\', \'Answer Diagram\')" class="max-h-72 w-auto object-contain rounded cursor-zoom-in">' +
+              '</div>' +
+            '</div>';
+          } else if (card.backImg) {
+            html += '<div class="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-white dark:bg-slate-900 p-2.5 space-y-2 mt-2" onclick="event.stopPropagation()">' +
+              '<div class="flex items-center justify-between text-[11px] font-mono text-emerald-600 dark:text-emerald-400">' +
+                '<span>📸 Cake\x27s Senior Notes &amp; Histology Diagram (Tap to zoom)</span>' +
+                '<button onclick="openCakeImageZoom(\'' + card.backImg + '\', \'Senior Notes &amp; Histology Diagram\')" class="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-bold cursor-pointer">🔍 Full Zoom</button>' +
+              '</div>' +
+              '<div class="flex justify-center bg-white dark:bg-slate-950 rounded-lg overflow-hidden p-1">' +
+                '<img src="' + card.backImg + '" alt="Senior Notes Diagram" onclick="openCakeImageZoom(\'' + card.backImg + '\', \'Senior Notes &amp; Histology Diagram\')" class="max-h-80 w-auto object-contain rounded cursor-zoom-in">' +
               '</div>' +
             '</div>';
           }
@@ -3324,6 +3346,8 @@
             evalTrack: s.evalTrack || '-',
             order: m.order || '2nd-Order',
             stem: m.stem || '',
+            img: m.img || '',
+            expImg: m.expImg || '',
             options: m.options || [],
             answerIndex: Number(m.answerIndex || 0),
             explanation: m.explanation || '',
@@ -3550,9 +3574,9 @@
                 '<button onclick="setMcqMode(\'tutor\')" class="px-3 py-1 rounded-lg font-bold transition cursor-pointer ' + (mcqMode === 'tutor' ? 'bg-emerald-600 text-white shadow-2xs' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900') + '">🎓 Tutor Mode</button>' +
                 '<button onclick="setMcqMode(\'exam\')" class="px-3 py-1 rounded-lg font-bold transition cursor-pointer ' + (mcqMode === 'exam' ? 'bg-indigo-600 text-white shadow-2xs' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900') + '">⏱️ Timed Exam Block</button>' +
               '</div>' +
-              '<!-- Scope Toggle: All 106 vs Completed Only -->' +
+              '<!-- Scope Toggle: All 108 vs Completed Only -->' +
               '<button onclick="mcqScopeMode = (mcqScopeMode === \'all\' ? \'completed\' : \'all\'); mcqCurrentPos = 0; renderStudioMcqs()" class="px-3 py-1.5 rounded-xl font-bold border transition cursor-pointer ' + (mcqScopeMode === 'completed' ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-blue-400') + '">' +
-                (mcqScopeMode === 'completed' ? '✅ Completed Classes Only (' + checkedSessionIds.size + ')' : '📚 All Course MCQs (106)') +
+                (mcqScopeMode === 'completed' ? '✅ Completed Classes Only (' + checkedSessionIds.size + ')' : '📚 All Course MCQs (' + allCourseMcqs.length + ')') +
               '</button>' +
               '<button onclick="mcqFullscreen = true; renderStudioMcqs()" class="px-3 py-1.5 rounded-xl font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 cursor-pointer transition">' +
                 '📺 Focus Mode' +
@@ -3644,9 +3668,9 @@
         html += '<div class="bg-white dark:bg-slate-900 rounded-2xl p-8 border border-slate-200 dark:border-slate-800 text-center space-y-3">' +
           '<div class="text-3xl">🎯</div>' +
           '<h4 class="text-base font-extrabold text-slate-900 dark:text-white">No MCQs match your current filter</h4>' +
-          '<p class="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">Switch filter back to "All" or toggle "All Course MCQs (106)" to access the full question bank.</p>' +
+          '<p class="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">Switch filter back to "All" or toggle "All Course MCQs (' + allCourseMcqs.length + ')" to access the full question bank.</p>' +
           '<div class="pt-1 flex justify-center gap-2">' +
-            '<button onclick="mcqScopeMode = \'all\'; mcqWeekFilter = 0; mcqSessionFilter = \'all\'; mcqStatusFilter = \'all\'; mcqOrderFilter = \'all\'; renderStudioMcqs()" class="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 text-white cursor-pointer">Show All 106 Exam MCQs</button>' +
+            '<button onclick="mcqScopeMode = \'all\'; mcqWeekFilter = 0; mcqSessionFilter = \'all\'; mcqStatusFilter = \'all\'; mcqOrderFilter = \'all\'; renderStudioMcqs()" class="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 text-white cursor-pointer">Show All ' + allCourseMcqs.length + ' Exam MCQs</button>' +
           '</div>' +
         '</div></div>';
         container.innerHTML = html;
@@ -3684,8 +3708,15 @@
           '</div>' +
 
           '<!-- Clinical Vignette Stem -->' +
-          '<div class="text-sm sm:text-base font-medium text-slate-900 dark:text-slate-100 leading-relaxed select-text bg-slate-50/70 dark:bg-slate-800/40 p-4 rounded-xl border border-slate-200/70 dark:border-slate-800">' +
-            q.stem +
+          '<div class="text-sm sm:text-base font-medium text-slate-900 dark:text-slate-100 leading-relaxed select-text bg-slate-50/70 dark:bg-slate-800/40 p-4 rounded-xl border border-slate-200/70 dark:border-slate-800 space-y-3">' +
+            '<div>' + q.stem + '</div>' +
+            (q.img ? '<div class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 p-2.5 space-y-1.5">' +
+              '<div class="flex items-center justify-between text-[11px] font-mono text-amber-600 dark:text-amber-400">' +
+                '<span>📸 Exam Question Exhibit / Histology Slide (Tap to zoom)</span>' +
+                '<button onclick="openCakeImageZoom(\'' + q.img + '\', \'Exam Question Exhibit\')" class="px-2 py-0.5 rounded bg-amber-600 hover:bg-amber-500 text-white font-bold cursor-pointer">🔍 Zoom Exhibit</button>' +
+              '</div>' +
+              '<div class="flex justify-center"><img src="' + q.img + '" alt="MCQ Exhibit" onclick="openCakeImageZoom(\'' + q.img + '\', \'Exam Question Exhibit\')" class="max-h-64 w-auto object-contain rounded cursor-zoom-in"></div>' +
+            '</div>' : '') +
           '</div>' +
 
           '<!-- 5 Homogeneous Options (A-E) -->' +
@@ -3751,6 +3782,13 @@
             '<span class="text-[11px] font-mono text-slate-500">CU-MEDi IMS-III Key</span>' +
           '</div>' +
           '<p class="text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed font-medium">' + q.explanation + '</p>' +
+          (q.expImg ? '<div class="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-white dark:bg-slate-950 p-2.5 space-y-1.5 mt-2">' +
+            '<div class="flex items-center justify-between text-[11px] font-mono text-emerald-600 dark:text-emerald-400">' +
+              '<span>📸 Cake\x27s Senior Notes &amp; Histology Reference (Tap to zoom)</span>' +
+              '<button onclick="openCakeImageZoom(\'' + q.expImg + '\', \'Senior Notes &amp; Histology Reference\')" class="px-2 py-0.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-bold cursor-pointer">🔍 Full Zoom</button>' +
+            '</div>' +
+            '<div class="flex justify-center"><img src="' + q.expImg + '" alt="Explanation Diagram" onclick="openCakeImageZoom(\'' + q.expImg + '\', \'Senior Notes &amp; Histology Reference\')" class="max-h-80 w-auto object-contain rounded cursor-zoom-in"></div>' +
+          '</div>' : '') +
         '</div>';
       } else if (mcqMode === 'tutor') {
         html += '<div class="flex justify-center pt-1">' +
@@ -4433,8 +4471,10 @@
                         : (curRating === 'again'
                           ? '<span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300">🔴 Again</span>'
                           : '')));
-                  const hasPhotoPill = (fPhoto || bPhoto)
-                    ? '<span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">🖼️ Photo</span>'
+                  const fBuiltIn = r.frontImg || '';
+                  const bBuiltIn = r.backImg || r.img || '';
+                  const hasPhotoPill = (fPhoto || bPhoto || fBuiltIn || bBuiltIn)
+                    ? '<span class="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">🖼️ Diagram</span>'
                     : '';
 
                   return '<details class="group rounded-xl border ' + borderStyle + ' p-3 text-xs">' +
@@ -4458,7 +4498,14 @@
                             '</div>' +
                           '</div>' +
                           '<img src="' + (fPhoto.renderedDataUrl || fPhoto.baseDataUrl) + '" onclick="openPhotoAnnotationModal(\'' + frontKey + '\', \'Q' + (qIdx + 1) + ' Question Photo\')" class="max-h-56 w-auto mx-auto object-contain rounded cursor-zoom-in">' +
-                        '</div>' : '') +
+                        '</div>' : (fBuiltIn ?
+                        '<div class="p-2 rounded-lg bg-white dark:bg-slate-900 border border-amber-200 dark:border-amber-800 space-y-1.5">' +
+                          '<div class="flex items-center justify-between text-[10px] font-mono text-amber-600">' +
+                            '<span>📸 Exam Visual Prompt</span>' +
+                            '<button onclick="openCakeImageZoom(\'' + fBuiltIn + '\', \'Q' + (qIdx + 1) + ' Visual Prompt\')" class="px-2 py-0.5 rounded bg-amber-600 text-white font-bold cursor-pointer">🔍 Zoom</button>' +
+                          '</div>' +
+                          '<img src="' + fBuiltIn + '" onclick="openCakeImageZoom(\'' + fBuiltIn + '\', \'Q' + (qIdx + 1) + ' Visual Prompt\')" class="max-h-56 w-auto mx-auto object-contain rounded cursor-zoom-in">' +
+                        '</div>' : '')) +
                       '<div class="text-slate-800 dark:text-slate-200 font-medium leading-relaxed bg-white/70 dark:bg-slate-900/70 p-2.5 rounded-lg">' +
                         '<span class="text-emerald-600 dark:text-emerald-400 font-bold font-mono mr-1">Answer:</span>' + r.a +
                       '</div>' +
@@ -4472,7 +4519,14 @@
                             '</div>' +
                           '</div>' +
                           '<img src="' + (bPhoto.renderedDataUrl || bPhoto.baseDataUrl) + '" onclick="openPhotoAnnotationModal(\'' + backKey + '\', \'Q' + (qIdx + 1) + ' Answer Photo\')" class="max-h-56 w-auto mx-auto object-contain rounded cursor-zoom-in">' +
-                        '</div>' : '') +
+                        '</div>' : (bBuiltIn ?
+                        '<div class="p-2 rounded-lg bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800 space-y-1.5">' +
+                          '<div class="flex items-center justify-between text-[10px] font-mono text-emerald-600">' +
+                            '<span>📸 Cake\x27s Senior Notes &amp; Histology Diagram</span>' +
+                            '<button onclick="openCakeImageZoom(\'' + bBuiltIn + '\', \'Q' + (qIdx + 1) + ' Senior Notes Diagram\')" class="px-2 py-0.5 rounded bg-emerald-600 text-white font-bold cursor-pointer">🔍 Full Zoom</button>' +
+                          '</div>' +
+                          '<img src="' + bBuiltIn + '" onclick="openCakeImageZoom(\'' + bBuiltIn + '\', \'Q' + (qIdx + 1) + ' Senior Notes Diagram\')" class="max-h-64 w-auto mx-auto object-contain rounded cursor-zoom-in">' +
+                        '</div>' : '')) +
                       '<div class="flex flex-wrap items-center justify-between gap-2 pt-0.5">' +
                         '<div class="flex flex-wrap items-center gap-1">' +
                           '<button onclick="armPhotoPasteTarget(\'' + frontKey + '\', \'Q' + (qIdx + 1) + ' Front Photo\')" class="px-2 py-0.5 rounded text-[10px] font-bold bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-blue-400 cursor-pointer">📸 ' + (fPhoto ? 'Replace Front' : '+ Front Photo (Cmd+V)') + '</button>' +
@@ -4557,21 +4611,35 @@
                   optsHtml += '</div>';
 
                   const expHtml = isAnswered
-                    ? '<div class="mt-2.5 p-3 rounded-lg border text-xs leading-relaxed ' + (isCorrect ? 'border-emerald-300 dark:border-emerald-800 bg-emerald-50/60 dark:bg-emerald-950/30 text-slate-800 dark:text-slate-200' : 'border-rose-300 dark:border-rose-800 bg-rose-50/60 dark:bg-rose-950/30 text-slate-800 dark:text-slate-200') + '">' +
+                    ? '<div class="mt-2.5 p-3 rounded-lg border text-xs leading-relaxed space-y-2 ' + (isCorrect ? 'border-emerald-300 dark:border-emerald-800 bg-emerald-50/60 dark:bg-emerald-950/30 text-slate-800 dark:text-slate-200' : 'border-rose-300 dark:border-rose-800 bg-rose-50/60 dark:bg-rose-950/30 text-slate-800 dark:text-slate-200') + '">' +
                         '<div class="flex items-center justify-between font-mono font-extrabold mb-1 ' + (isCorrect ? 'text-emerald-700 dark:text-emerald-300' : 'text-rose-700 dark:text-rose-300') + '">' +
                           '<span>' + (isCorrect ? '✅ Correct! (Choice ' + letters[m.answerIndex] + ')' : '❌ Incorrect — Correct Answer is Choice ' + letters[m.answerIndex]) + '</span>' +
                           '<button onclick="clearSingleMcqAnswer(\'' + id + '\', ' + s.index + ')" class="text-[10px] underline font-normal text-slate-500 hover:text-slate-800 cursor-pointer">↺ Retry</button>' +
                         '</div>' +
-                        m.explanation +
+                        '<div>' + m.explanation + '</div>' +
+                        (m.expImg ? '<div class="p-2 rounded-lg bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-800 space-y-1">' +
+                          '<div class="flex items-center justify-between text-[10px] font-mono text-emerald-600">' +
+                            '<span>📸 Cake\x27s Senior Notes &amp; Histology Reference</span>' +
+                            '<button onclick="openCakeImageZoom(\'' + m.expImg + '\', \'Senior Notes Reference\')" class="px-2 py-0.5 rounded bg-emerald-600 text-white font-bold cursor-pointer">🔍 Zoom</button>' +
+                          '</div>' +
+                          '<img src="' + m.expImg + '" onclick="openCakeImageZoom(\'' + m.expImg + '\', \'Senior Notes Reference\')" class="max-h-60 w-auto mx-auto object-contain rounded cursor-zoom-in">' +
+                        '</div>' : '') +
                       '</div>'
                     : '';
 
-                  return '<div class="p-3.5 rounded-xl border border-emerald-200/80 dark:border-emerald-900/50 bg-emerald-50/20 dark:bg-slate-800/40 text-xs">' +
+                  return '<div class="p-3.5 rounded-xl border border-emerald-200/80 dark:border-emerald-900/50 bg-emerald-50/20 dark:bg-slate-800/40 text-xs space-y-2">' +
                     '<div class="flex items-center justify-between gap-2 mb-1.5">' +
                       '<span class="font-mono font-extrabold text-emerald-700 dark:text-emerald-400">MCQ #' + (mIdx + 1) + ' (' + (m.order || '2nd-Order') + ')</span>' +
                       (isAnswered ? '<span class="px-2 py-0.2 rounded text-[10px] font-mono font-bold ' + (isCorrect ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300') + '">' + (isCorrect ? '🟢 Correct' : '🔴 Incorrect') + '</span>' : '<span class="text-[10px] font-mono text-slate-400">Select A–E to check</span>') +
                     '</div>' +
                     '<div class="font-semibold text-slate-900 dark:text-white leading-relaxed">' + m.stem + '</div>' +
+                    (m.img ? '<div class="p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 space-y-1">' +
+                      '<div class="flex items-center justify-between text-[10px] font-mono text-amber-600">' +
+                        '<span>📸 Question Exhibit</span>' +
+                        '<button onclick="openCakeImageZoom(\'' + m.img + '\', \'Question Exhibit\')" class="px-2 py-0.5 rounded bg-amber-600 text-white font-bold cursor-pointer">🔍 Zoom</button>' +
+                      '</div>' +
+                      '<img src="' + m.img + '" onclick="openCakeImageZoom(\'' + m.img + '\', \'Question Exhibit\')" class="max-h-56 w-auto mx-auto object-contain rounded cursor-zoom-in">' +
+                    '</div>' : '') +
                     optsHtml +
                     expHtml +
                   '</div>';
@@ -5001,6 +5069,35 @@ ${text}
     let currentAnnotationWidth = 4;
     let isDrawingAnnotation = false;
     let currentDraftShape = null;
+
+    function openCakeImageZoom(src, title) {
+      if (!src) return;
+      let modal = document.getElementById('cakeImageZoomModal');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'cakeImageZoomModal';
+        modal.className = 'fixed inset-0 z-[95] bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-3 sm:p-6';
+        modal.onclick = function(e) {
+          if (e.target === modal) modal.classList.add('hidden');
+        };
+        modal.innerHTML =
+          '<div class="w-full max-w-5xl bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">' +
+            '<div class="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900">' +
+              '<span id="cakeZoomTitle" class="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white font-mono">📸 Senior Notes &amp; Histology Reference</span>' +
+              '<button onclick="document.getElementById(\'cakeImageZoomModal\').classList.add(\'hidden\')" class="px-3 py-1 rounded-lg text-xs font-bold bg-rose-600 hover:bg-rose-500 text-white cursor-pointer">✕ Close [Esc]</button>' +
+            '</div>' +
+            '<div class="p-3 sm:p-4 overflow-auto flex-1 flex items-center justify-center bg-slate-100/60 dark:bg-slate-950">' +
+              '<img id="cakeZoomImg" src="" alt="Zoomed Diagram" class="max-w-full h-auto rounded-lg shadow-md">' +
+            '</div>' +
+          '</div>';
+        document.body.appendChild(modal);
+      }
+      const imgEl = document.getElementById('cakeZoomImg');
+      const titleEl = document.getElementById('cakeZoomTitle');
+      if (imgEl) imgEl.src = src;
+      if (titleEl) titleEl.innerText = '📸 ' + (title || 'Senior Notes & Histology Reference');
+      modal.classList.remove('hidden');
+    }
 
     function openPhotoAnnotationModal(photoKey, title) {
       const record = window.GI_PHOTO_CACHE[photoKey];
