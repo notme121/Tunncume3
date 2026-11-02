@@ -6299,43 +6299,48 @@ window.__GI_DISK_SYNC_STATE = {"updatedAt": 1793549307848, "checkedSessions": [0
   <!-- TOP BAR -->
   <header class="sticky top-0 z-50 backdrop-blur-md bg-white/85 dark:bg-slate-900/85 border-b border-slate-200 dark:border-slate-800 shadow-xs">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16">
-        <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-teal-500 to-cyan-400 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-blue-500/20">
+      <div class="flex items-center justify-between h-16 gap-3">
+        <!-- BRANDING (LEFT) -->
+        <div class="flex items-center space-x-3 min-w-0 pr-2">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-teal-500 to-cyan-400 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-blue-500/20 shrink-0">
             GI
           </div>
-          <div>
-            <div class="flex items-center space-x-2">
-              <span class="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 font-mono">3030346</span>
-              <h1 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">Gastrointestinal System Course 2026</h1>
+          <div class="min-w-0">
+            <h1 class="text-sm sm:text-base lg:text-lg font-bold text-slate-900 dark:text-white leading-tight whitespace-nowrap">
+              Gastrointestinal System <span class="hidden sm:inline">Course 2026</span>
+            </h1>
+            <div class="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 leading-tight mt-0.5">
+              <span class="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-blue-300 font-mono shrink-0">3030346</span>
+              <span class="hidden md:inline truncate">CU-MEDi &bull; Faculty of Medicine, Chulalongkorn University</span>
+              <span class="md:hidden truncate">CU-MEDi</span>
             </div>
-            <p class="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">CU-MEDi | Faculty of Medicine, Chulalongkorn University</p>
           </div>
         </div>
 
-        <div class="flex items-center space-x-2 sm:space-x-2.5">
-          <button id="syncStatusBadge" onclick="syncNowWithServer(true)" class="inline-flex items-center px-2.5 py-1.5 rounded-lg text-[11px] font-mono font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 transition cursor-pointer" title="Real-Time 2-Way Sync across Mac, iPhone &amp; iPad — Click to sync now">
+        <!-- NAVIGATION CONTROLS (RIGHT) -->
+        <div class="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
+          <button id="syncStatusBadge" onclick="syncNowWithServer(true)" class="inline-flex items-center px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg text-[11px] font-mono font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 transition cursor-pointer" title="Real-Time 2-Way Sync across Mac, iPhone & iPad — Click to sync now">
             <span>🔄 Synced</span>
           </button>
-          <button onclick="switchTab('studioTab'); switchStudioSubTab('flashcards')" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 transition shadow-md shadow-amber-500/20 cursor-pointer" title="Practice Active Recall Flashcards">
-            <span class="mr-1.5">⚡</span> Recall Deck <span id="headerRecallCountBadge" class="ml-1.5 px-1.5 py-0.5 rounded-full bg-white/25 text-[10px] font-mono">223</span>
+          <button onclick="switchTab('studioTab'); switchStudioSubTab('flashcards')" class="inline-flex items-center px-2.5 py-1.5 sm:px-3 rounded-lg text-xs font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 transition shadow-md shadow-amber-500/20 cursor-pointer" title="Practice Active Recall Flashcards">
+            <span class="mr-1">⚡</span> <span>Recall <span class="hidden md:inline">Deck</span></span> <span id="headerRecallCountBadge" class="ml-1.5 px-1.5 py-0.5 rounded-full bg-white/25 text-[10px] font-mono">223</span>
           </button>
-          <button onclick="switchTab('studioTab'); switchStudioSubTab('mcqs')" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700 transition shadow-md shadow-emerald-500/20 cursor-pointer" title="Practice 5-Option Board/IMS-III Style Clinical Vignette MCQs">
-            <span class="mr-1.5">📝</span> Exam MCQs <span id="headerMcqCountBadge" class="ml-1.5 px-1.5 py-0.5 rounded-full bg-white/25 text-[10px] font-mono">106</span>
+          <button onclick="switchTab('studioTab'); switchStudioSubTab('mcqs')" class="inline-flex items-center px-2.5 py-1.5 sm:px-3 rounded-lg text-xs font-bold bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700 transition shadow-md shadow-emerald-500/20 cursor-pointer" title="Practice 5-Option Board/IMS-III Style Clinical Vignette MCQs">
+            <span class="mr-1">📝</span> <span>Exam <span class="hidden md:inline">MCQs</span></span> <span id="headerMcqCountBadge" class="ml-1.5 px-1.5 py-0.5 rounded-full bg-white/25 text-[10px] font-mono">106</span>
           </button>
-          <button onclick="switchTab('studioTab')" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 text-white hover:from-blue-700 hover:to-cyan-600 transition shadow-md shadow-blue-500/20 cursor-pointer">
-            <span class="mr-1.5">📖</span> Studio &amp; Blueprint
+          <button onclick="switchTab('studioTab')" class="inline-flex items-center px-2.5 py-1.5 sm:px-3 rounded-lg text-xs font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 text-white hover:from-blue-700 hover:to-cyan-600 transition shadow-md shadow-blue-500/20 cursor-pointer">
+            <span class="mr-1">📖</span> <span>Studio<span class="hidden lg:inline"> &amp; Blueprint</span></span>
           </button>
-          <a href="https://docs.google.com/document/d/1UGQQqHTj2pwHSphdqhUmpPIbBk8Z-wpo/edit" target="_blank" class="hidden sm:inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900 transition shadow-xs" title="Open Official GI Student Guide 2026 (Google Docs)">
-            <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+          <a href="https://docs.google.com/document/d/1UGQQqHTj2pwHSphdqhUmpPIbBk8Z-wpo/edit" target="_blank" class="hidden xl:inline-flex items-center px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900 transition shadow-xs" title="Open Official GI Student Guide 2026 (Google Docs)">
+            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
             Student Guide
           </a>
-          <a href="https://docs.google.com/spreadsheets/d/16F5apULWvxIWmZjOaTRnVikVXKZZje8l/edit?usp=sharing&ouid=106346092255157210935&rtpof=true&sd=true" target="_blank" class="hidden md:inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 transition shadow-xs">
-            <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-            Live Schedule Sheet
+          <a href="https://docs.google.com/spreadsheets/d/16F5apULWvxIWmZjOaTRnVikVXKZZje8l/edit?usp=sharing&ouid=106346092255157210935&rtpof=true&sd=true" target="_blank" class="hidden xl:inline-flex items-center px-2.5 py-1.5 rounded-lg text-xs font-medium bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 transition shadow-xs">
+            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            Schedule
           </a>
-          <a href="https://docs.google.com/forms/d/e/1FAIpQLScB0S_JBFRFuyph9sceEOpusVN7G_tMCoWJo6phDWdUseidPA/viewform" target="_blank" class="hidden lg:inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 hover:bg-rose-100 transition shadow-xs">
-            <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLScB0S_JBFRFuyph9sceEOpusVN7G_tMCoWJo6phDWdUseidPA/viewform" target="_blank" class="hidden 2xl:inline-flex items-center px-2.5 py-1.5 rounded-lg text-xs font-medium bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 hover:bg-rose-100 transition shadow-xs">
+            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
             Leave Form
           </a>
           <button onclick="window.print()" class="no-print p-2 rounded-lg text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="Print Current View">
