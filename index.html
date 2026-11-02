@@ -13,8 +13,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="data/gi_daily_learning_data.js"></script>
-  <script src="data/user_sync_state.js"></script>
+  <script src="data/gi_daily_learning_data.js?v=20261102_254"></script>
+  <script src="data/user_sync_state.js?v=20261102_254"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -5755,13 +5755,353 @@ ${text}
     });
 
     // =========================================================================
-    // REAL-TIME 2-WAY MULTI-DEVICE SYNC ENGINE (Mac ↔ iPhone ↔ iPad Pro 11" + Cloud Ready)
+    // REAL-TIME 2-WAY MULTI-DEVICE SYNC ENGINE (Mac ↔ iPhone ↔ iPad Pro 11" + Live Cloud Sync)
     // =========================================================================
     let lastServerSyncAt = 0;
     let isApplyingRemoteSync = false;
     let pushSyncDebounceTimer = null;
     let activeSyncEndpoint = null;
     let localSyncServerReachable = false;
+
+    // Zero-config Cloud Sync Channel for GitHub Pages (https://notme121.github.io/Tunncume3/)
+    const CLOUD_SYNC_TOPIC = 'tunn_cumedi_gi_2026_cloud_sync_v1';
+    const CLOUD_SYNC_BASE_URL = 'https://ntfy.sh/' + CLOUD_SYNC_TOPIC;
+    const CLOUD_DEVICE_ID = (() => {
+      try {
+        let id = localStorage.getItem('gi_device_sync_id_2026');
+        if (!id) {
+          id = 'dev_' + Math.random().toString(36).slice(2, 10);
+          localStorage.setItem('gi_device_sync_id_2026', id);
+        }
+        return id;
+      } catch (e) {
+        return 'dev_' + Math.random().toString(36).slice(2, 10);
+      }
+    })();
+    let cloudEventSource = null;
+    let lastCloudPushHash = '';
+
+    function encodeCloudCompactPayload() {
+      const bySession = {};
+      Object.keys(recallSchedule || {}).forEach(k => {
+        const m = /^session_(\d+)_q_(\d+)$/.exec(k);
+        if (!m) return;
+        const sIdx = Number(m[1]);
+        const qIdx = Number(m[2]);
+        const sched = recallSchedule[k];
+        const r = (recallRatings && recallRatings[k]) || (sched && sched.rating);
+        if (!r || r === 'unrated' || !sched) return;
+        const rChar = r === 'again' ? 'a' : (r === 'hard' ? 'h' : (r === 'easy' || r === 'mastered' ? 'e' : 'g'));
+        const dueSec = Math.max(0, Math.round((sched.dueAt || 0) / 1000)).toString(36);
+        const updSec = Math.max(0, Math.round((sched.updatedAt || 0) / 1000)).toString(36);
+        const intMin = Math.max(1, Math.round((sched.intervalMs || 60000) / 60000)).toString(36);
+        const reps36 = Math.max(0, Number(sched.reps || 0)).toString(36);
+        if (!bySession[sIdx]) bySession[sIdx] = [];
+        bySession[sIdx].push(qIdx.toString(36) + '.' + rChar + '.' + reps36 + '.' + dueSec + '.' + updSec + '.' + intMin);
+      });
+      const cStr = Object.keys(bySession).sort((a, b) => Number(a) - Number(b)).map(sIdx => {
+        return Number(sIdx).toString(36) + ':' + bySession[sIdx].join(',');
+      }).join(';');
+
+      const mcqBySession = {};
+      Object.keys(mcqUserAnswers || {}).forEach(k => {
+        const m = /^mcq_s(\d+)_q(\d+)$/.exec(k);
+        if (!m || mcqUserAnswers[k] === undefined) return;
+        const sIdx = Number(m[1]);
+        const qIdx = Number(m[2]);
+        if (!mcqBySession[sIdx]) mcqBySession[sIdx] = [];
+        mcqBySession[sIdx].push(qIdx.toString(36) + '.' + Number(mcqUserAnswers[k]).toString(36));
+      });
+      const mStr = Object.keys(mcqBySession).sort((a, b) => Number(a) - Number(b)).map(sIdx => {
+        return Number(sIdx).toString(36) + ':' + mcqBySession[sIdx].join(',');
+      }).join(';');
+
+      return {
+        v: 3,
+        d: CLOUD_DEVICE_ID,
+        t: Date.now(),
+        s: Array.from(checkedSessionIds).sort((a, b) => a - b).map(x => Number(x).toString(36)).join(','),
+        c: cStr,
+        m: mStr,
+        f: Array.from(mcqFlaggedIds || []).join(',')
+      };
+    }
+
+    function decodeCloudCompactPayload(obj) {
+      if (!obj || typeof obj !== 'object') return null;
+      if (obj.recallSchedule && typeof obj.recallSchedule === 'object') return obj;
+      if (obj.v !== 3) return null;
+      const decoded = {
+        deviceId: obj.d || '',
+        updatedAt: Number(obj.t || 0),
+        checkedSessions: obj.s ? obj.s.split(',').filter(Boolean).map(x => parseInt(x, 36)) : [],
+        recallRatings: {},
+        recallSchedule: {},
+        mcqUserAnswers: {},
+        mcqFlaggedIds: obj.f ? obj.f.split(',').filter(Boolean) : []
+      };
+      if (obj.c && typeof obj.c === 'string') {
+        obj.c.split(';').filter(Boolean).forEach(sBlock => {
+          const parts = sBlock.split(':');
+          if (parts.length !== 2) return;
+          const sIdx = parseInt(parts[0], 36);
+          parts[1].split(',').filter(Boolean).forEach(item => {
+            const tk = item.split('.');
+            if (tk.length < 6) return;
+            const qIdx = parseInt(tk[0], 36);
+            const rChar = tk[1];
+            const reps = parseInt(tk[2], 36) || 0;
+            const dueAt = parseInt(tk[3], 36) * 1000;
+            const updatedAt = parseInt(tk[4], 36) * 1000;
+            const intervalMs = Math.max(60000, parseInt(tk[5], 36) * 60000);
+            const rating = rChar === 'a' ? 'again' : (rChar === 'h' ? 'hard' : (rChar === 'e' ? 'easy' : 'good'));
+            const key = 'session_' + sIdx + '_q_' + qIdx;
+            decoded.recallRatings[key] = rating;
+            decoded.recallSchedule[key] = {
+              rating: rating,
+              dueAt: dueAt,
+              intervalMs: intervalMs,
+              reps: reps,
+              updatedAt: updatedAt
+            };
+          });
+        });
+      }
+      if (obj.m && typeof obj.m === 'string') {
+        obj.m.split(';').filter(Boolean).forEach(sBlock => {
+          const parts = sBlock.split(':');
+          if (parts.length !== 2) return;
+          const sIdx = parseInt(parts[0], 36);
+          parts[1].split(',').filter(Boolean).forEach(item => {
+            const tk = item.split('.');
+            if (tk.length < 2) return;
+            const qIdx = parseInt(tk[0], 36);
+            const ans = parseInt(tk[1], 36);
+            decoded.mcqUserAnswers['mcq_s' + sIdx + '_q' + qIdx] = ans;
+          });
+        });
+      }
+      return decoded;
+    }
+
+    // Smart per-card timestamp & review-progression merger (never overwrites newer morning reviews on iPhone or Mac!)
+    function mergeIncomingStateSmart(incoming) {
+      if (!incoming || typeof incoming !== 'object') return { appliedChanges: false, localHasNewer: false };
+      let appliedChanges = false;
+      let localHasNewer = false;
+
+      // 1. Checked sessions union
+      if (Array.isArray(incoming.checkedSessions) && incoming.checkedSessions.length > 0) {
+        const beforeSize = checkedSessionIds.size;
+        incoming.checkedSessions.forEach(id => checkedSessionIds.add(Number(id)));
+        if (checkedSessionIds.size !== beforeSize) {
+          localStorage.setItem('gi_checked_sessions_2026', JSON.stringify(Array.from(checkedSessionIds)));
+          appliedChanges = true;
+        }
+      }
+
+      // 2. Per-card Anki schedule & rating merge
+      const incSched = incoming.recallSchedule || {};
+      const incRatings = incoming.recallRatings || {};
+      const allCardKeys = new Set([...Object.keys(recallSchedule || {}), ...Object.keys(incSched)]);
+
+      allCardKeys.forEach(k => {
+        const loc = recallSchedule[k];
+        const inc = incSched[k];
+        if (inc && !loc) {
+          recallSchedule[k] = inc;
+          recallRatings[k] = incRatings[k] || inc.rating || 'good';
+          appliedChanges = true;
+        } else if (loc && !inc) {
+          localHasNewer = true;
+        } else if (loc && inc) {
+          const locUpd = Number(loc.updatedAt || 0);
+          const incUpd = Number(inc.updatedAt || 0);
+          const locDue = Number(loc.dueAt || 0);
+          const incDue = Number(inc.dueAt || 0);
+          const locReps = Number(loc.reps || 0);
+          const incReps = Number(inc.reps || 0);
+
+          // Determine if incoming review is strictly newer (by updatedAt > 60s OR higher reps with later dueAt)
+          const incIsNewerReview = (incUpd > locUpd + 60000) || (incReps > locReps && incDue > locDue + 600000) || (Math.abs(incUpd - locUpd) <= 60000 && incDue > locDue + 3600000);
+          const locIsNewerReview = (locUpd > incUpd + 60000) || (locReps > incReps && locDue > incDue + 600000) || (Math.abs(locUpd - incUpd) <= 60000 && locDue > incDue + 3600000);
+
+          if (incIsNewerReview && !locIsNewerReview) {
+            recallSchedule[k] = inc;
+            recallRatings[k] = incRatings[k] || inc.rating || 'good';
+            appliedChanges = true;
+          } else if (locIsNewerReview && !incIsNewerReview) {
+            localHasNewer = true;
+          } else if (incUpd > locUpd && (inc.rating !== loc.rating || Math.abs(incDue - locDue) > 60000)) {
+            recallSchedule[k] = inc;
+            recallRatings[k] = incRatings[k] || inc.rating || 'good';
+            appliedChanges = true;
+          } else if (locUpd > incUpd && (loc.rating !== inc.rating || Math.abs(locDue - incDue) > 60000)) {
+            localHasNewer = true;
+          }
+        }
+      });
+
+      if (appliedChanges) {
+        localStorage.setItem('gi_recall_ratings_2026', JSON.stringify(recallRatings));
+        localStorage.setItem('gi_recall_schedule_2026', JSON.stringify(recallSchedule));
+        ensureRecallScheduleSynced();
+      }
+
+      // 3. MCQ answers & flags merge
+      const incMcq = incoming.mcqUserAnswers || {};
+      let mcqChanged = false;
+      Object.keys(incMcq).forEach(k => {
+        if (mcqUserAnswers[k] === undefined && incMcq[k] !== undefined) {
+          mcqUserAnswers[k] = incMcq[k];
+          mcqChanged = true;
+          appliedChanges = true;
+        }
+      });
+      Object.keys(mcqUserAnswers || {}).forEach(k => {
+        if (mcqUserAnswers[k] !== undefined && incMcq[k] === undefined) {
+          localHasNewer = true;
+        }
+      });
+      if (mcqChanged) {
+        localStorage.setItem('gi_mcq_answers_2026', JSON.stringify(mcqUserAnswers));
+      }
+
+      if (Array.isArray(incoming.mcqFlaggedIds) && incoming.mcqFlaggedIds.length > 0) {
+        const beforeFlags = mcqFlaggedIds.size;
+        incoming.mcqFlaggedIds.forEach(id => mcqFlaggedIds.add(id));
+        if (mcqFlaggedIds.size !== beforeFlags) {
+          localStorage.setItem('gi_mcq_flags_2026', JSON.stringify(Array.from(mcqFlaggedIds)));
+          appliedChanges = true;
+        }
+      }
+
+      if (appliedChanges) {
+        applyFilters();
+        updateProgressBar();
+        renderTodayBriefing();
+        if (activeStudioSubTab === 'flashcards') {
+          dealFreshAnkiMix(false);
+          renderStudioFlashcards();
+        } else if (activeStudioSubTab === 'mcqs') {
+          renderStudioMcqs();
+        } else if (activeStudioSubTab === 'browser') {
+          renderStudioBrowser();
+        }
+      }
+
+      return { appliedChanges, localHasNewer };
+    }
+
+    async function extractCloudEventPayload(evt) {
+      if (!evt || evt.event !== 'message') return null;
+      try {
+        if (evt.attachment && evt.attachment.url) {
+          const r = await fetch(evt.attachment.url);
+          if (r && r.ok) {
+            const j = await r.json();
+            return decodeCloudCompactPayload(j);
+          }
+        }
+        if (evt.message && evt.message.startsWith('{')) {
+          const j = JSON.parse(evt.message);
+          return decodeCloudCompactPayload(j);
+        }
+      } catch (e) {}
+      return null;
+    }
+
+    async function pushToCloudSyncChannel(forcePush) {
+      if (typeof fetch !== 'function') return false;
+      try {
+        const compact = encodeCloudCompactPayload();
+        const stateSig = compact.s + '|' + compact.c + '|' + compact.m + '|' + compact.f;
+        if (!forcePush && stateSig === lastCloudPushHash) {
+          updateSyncStatusBadge('ok', '🟢 Cloud Synced');
+          return true;
+        }
+        lastCloudPushHash = stateSig;
+        const res = await fetch(CLOUD_SYNC_BASE_URL, {
+          method: 'POST',
+          body: JSON.stringify(compact)
+        });
+        if (res && res.ok) {
+          updateSyncStatusBadge('ok', '🟢 Cloud Synced');
+          return true;
+        }
+      } catch (e) {}
+      return false;
+    }
+
+    async function pullAndMergeCloudSyncChannel(showToastFeedback) {
+      if (typeof fetch !== 'function') return;
+      try {
+        updateSyncStatusBadge('syncing', '🔄 Syncing...');
+        const res = await fetch(CLOUD_SYNC_BASE_URL + '/json?poll=1&since=all');
+        let anyCloudMessage = false;
+        let anyLocalNewer = false;
+        let anyApplied = false;
+        if (res && res.ok) {
+          const text = await res.text();
+          const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+          // Process most recent snapshots (up to last 8 messages)
+          const recentLines = lines.slice(-8);
+          for (let i = 0; i < recentLines.length; i++) {
+            try {
+              const evt = JSON.parse(recentLines[i]);
+              const decoded = await extractCloudEventPayload(evt);
+              if (decoded) {
+                anyCloudMessage = true;
+                const resMerge = mergeIncomingStateSmart(decoded);
+                if (resMerge.appliedChanges) anyApplied = true;
+                if (resMerge.localHasNewer) anyLocalNewer = true;
+                const compactNow = encodeCloudCompactPayload();
+                lastCloudPushHash = compactNow.s + '|' + compactNow.c + '|' + compactNow.m + '|' + compactNow.f;
+              }
+            } catch (e) {}
+          }
+        }
+        // If this device (e.g. iPhone with morning reviews) has newer card reviews than the cloud, or if cloud was empty, push immediately!
+        if (!anyCloudMessage || anyLocalNewer || showToastFeedback) {
+          await pushToCloudSyncChannel(true);
+        } else {
+          updateSyncStatusBadge('ok', '🟢 Cloud Synced');
+        }
+        if (showToastFeedback && typeof showPhotoToast === 'function') {
+          showPhotoToast('🟢 Cloud Synced across iPhone, iPad & Mac! (' + Object.keys(recallRatings).length + ' rated cards, ' + Object.keys(mcqUserAnswers).length + ' MCQs)');
+        }
+      } catch (err) {
+        updateSyncStatusBadge('offline', '☁️ Saved');
+      }
+    }
+
+    function startCloudSyncLiveStream() {
+      if (typeof EventSource === 'undefined' || cloudEventSource) return;
+      try {
+        cloudEventSource = new EventSource(CLOUD_SYNC_BASE_URL + '/sse');
+        cloudEventSource.onmessage = async function(ev) {
+          try {
+            const data = JSON.parse(ev.data);
+            if (!data || data.event !== 'message') return;
+            const decoded = await extractCloudEventPayload(data);
+            if (!decoded || decoded.deviceId === CLOUD_DEVICE_ID) return;
+            const resMerge = mergeIncomingStateSmart(decoded);
+            if (resMerge.appliedChanges) {
+              updateSyncStatusBadge('ok', '🟢 Cloud Synced');
+            }
+            if (resMerge.localHasNewer) {
+              // Broadcast back our newer cards so the other device receives them too
+              setTimeout(() => pushToCloudSyncChannel(true), 400);
+            }
+          } catch (e) {}
+        };
+        cloudEventSource.onerror = function() {
+          try { cloudEventSource.close(); } catch (e) {}
+          cloudEventSource = null;
+          setTimeout(startCloudSyncLiveStream, 8000);
+        };
+      } catch (e) {}
+    }
 
     function isLocalLanEnvironment() {
       if (!window.location) return false;
@@ -5874,7 +6214,7 @@ ${text}
           Object.keys(seed.recallSchedule).forEach(k => {
             const sItem = seed.recallSchedule[k];
             const existing = recallSchedule[k];
-            if (!existing || (sItem && sItem.updatedAt && (!existing.updatedAt || sItem.updatedAt >= existing.updatedAt))) {
+            if (!existing || (sItem && sItem.updatedAt && existing.updatedAt && sItem.updatedAt > existing.updatedAt + 60000 && (sItem.dueAt || 0) > (existing.dueAt || 0))) {
               recallSchedule[k] = sItem;
               if (seed.recallRatings && seed.recallRatings[k]) {
                 recallRatings[k] = seed.recallRatings[k];
@@ -6061,40 +6401,39 @@ ${text}
     function schedulePushSyncState(includePhotos, deletedPhotoKey) {
       if (isApplyingRemoteSync) return;
       if (typeof fetch !== 'function') return;
-      if (!localSyncServerReachable) {
-        updateSyncStatusBadge('offline', isLocalLanEnvironment() ? '💾 Local' : '☁️ Saved');
-        return;
-      }
       if (pushSyncDebounceTimer) clearTimeout(pushSyncDebounceTimer);
       updateSyncStatusBadge('syncing', '🔄 Syncing...');
       pushSyncDebounceTimer = setTimeout(async () => {
         try {
-          const payload = collectLocalSyncPayload('push', Boolean(includePhotos), deletedPhotoKey);
-          const res = await callSyncServer('', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-          if (res && res.ok) {
-            const data = await res.json();
-            if (data && data.updatedAt) lastServerSyncAt = Number(data.updatedAt);
-            updateSyncStatusBadge('ok', '🟢 Synced');
+          if (localSyncServerReachable) {
+            const payload = collectLocalSyncPayload('push', Boolean(includePhotos), deletedPhotoKey);
+            const res = await callSyncServer('', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            if (res && res.ok) {
+              const data = await res.json();
+              if (data && data.updatedAt) lastServerSyncAt = Number(data.updatedAt);
+            }
+          }
+          const cloudOk = await pushToCloudSyncChannel(false);
+          if (cloudOk || localSyncServerReachable) {
+            updateSyncStatusBadge('ok', '🟢 Cloud Synced');
           } else {
-            updateSyncStatusBadge('offline', isLocalLanEnvironment() ? '💾 Local' : '☁️ Saved');
+            updateSyncStatusBadge('offline', '☁️ Saved');
           }
         } catch (err) {
-          updateSyncStatusBadge('offline', isLocalLanEnvironment() ? '💾 Local' : '☁️ Saved');
+          updateSyncStatusBadge('offline', '☁️ Saved');
         }
-      }, 250);
+      }, 350);
     }
 
     async function syncNowWithServer(showToastFeedback) {
       if (typeof fetch !== 'function') return;
       if (!isLocalLanEnvironment()) {
-        updateSyncStatusBadge('offline', '☁️ Saved');
-        if (showToastFeedback) {
-          showPhotoToast('☁️ Cloud Mode: All progress (' + checkedSessionIds.size + ' classes, ' + Object.keys(recallRatings).length + ' Anki cards, ' + Object.keys(mcqUserAnswers).length + ' MCQs) is auto-saved in your browser! Use 💾 Backup / 📂 Restore in Studio to transfer across devices.');
-        }
+        await pullAndMergeCloudSyncChannel(showToastFeedback);
+        startCloudSyncLiveStream();
         return;
       }
       try {
@@ -6108,17 +6447,11 @@ ${text}
         if (res && res.ok) {
           const merged = await res.json();
           await applyRemoteSyncState(merged);
-          if (showToastFeedback) {
-            showPhotoToast('🔄 Synced across Mac, iPhone & iPad! (' + checkedSessionIds.size + ' classes, ' + Object.keys(recallRatings).length + ' Anki ratings, ' + Object.keys(mcqUserAnswers).length + ' MCQ answers)');
-          }
-        } else {
-          updateSyncStatusBadge('offline', '💾 Local');
-          if (showToastFeedback) {
-            showPhotoToast('💾 Saved locally in browser! (Run "python3 automation/serve_mobile.py" on Mac for live Wi-Fi sync across iPhone & iPad)');
-          }
         }
+        await pullAndMergeCloudSyncChannel(showToastFeedback);
+        startCloudSyncLiveStream();
       } catch (err) {
-        updateSyncStatusBadge('offline', '💾 Local');
+        await pullAndMergeCloudSyncChannel(showToastFeedback);
       }
     }
 
@@ -6131,7 +6464,7 @@ ${text}
           if (data && data.changed) {
             await applyRemoteSyncState(data);
           } else {
-            updateSyncStatusBadge('ok', '🟢 Synced');
+            updateSyncStatusBadge('ok', '🟢 Cloud Synced');
           }
         }
       } catch (err) {
@@ -6144,14 +6477,20 @@ ${text}
       if (window.__GI_DISK_SYNC_STATE && window.__GI_DISK_SYNC_STATE.updatedAt > 0) {
         await applyDiskSeedStateNonDestructive(window.__GI_DISK_SYNC_STATE);
       }
+      await pullAndMergeCloudSyncChannel(false);
+      startCloudSyncLiveStream();
+      window.addEventListener('focus', function() {
+        pullAndMergeCloudSyncChannel(false);
+        if (localSyncServerReachable) pollRemoteSyncState();
+      });
+      document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'visible') {
+          pullAndMergeCloudSyncChannel(false);
+        }
+      });
       if (isLocalLanEnvironment()) {
         await syncNowWithServer(false);
         setInterval(pollRemoteSyncState, 3500);
-        window.addEventListener('focus', function() {
-          if (localSyncServerReachable) pollRemoteSyncState();
-        });
-      } else {
-        updateSyncStatusBadge('offline', '☁️ Saved');
       }
     }
 
